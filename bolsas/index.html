@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Bolsas</title>
+<style>
+body{font-family:sans-serif;max-width:1100px;margin:auto}
+table{width:100%;border-collapse:collapse}
+th{background:#1F3864;color:white}
+td,th{padding:8px;border:1px solid #ddd}
+</style>
+</head>
+<body>
+
+<h1>Bolsas de Pesquisa</h1>
+<p>Atualizado em 2026-05-02</p>
+
+<input type="text" id="busca" placeholder="Buscar..." onkeyup="filtrar()">
+
+<table id="tabela">
+<thead>
+<tr>
+<th>Título</th><th>Fonte</th><th>País</th>
+<th>Nível</th><th>Prazo</th><th>Link</th>
+</tr>
+</thead>
+
+<tbody>
+
+        <tr>
+          <td>Bolsa Teste 2026-05-02 18:37:20.395479</td>
+          <td>Teste</td>
+          <td>Brasil</td>
+          <td>Mestrado</td>
+          <td>2026-12-01</td>
+          <td><a href="https://google.com" target="_blank">Abrir</a></td>
+        </tr>
+        
+</tbody>
+</table>
+
+<script>
+function filtrar(){
+  let input = document.getElementById("busca").value.toLowerCase();
+  document.querySelectorAll("#tabela tbody tr").forEach(tr => {
+    tr.style.display = tr.innerText.toLowerCase().includes(input) ? "" : "none";
+  });
+}
+</script>
+
+</body>
+</html>
