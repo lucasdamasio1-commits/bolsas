@@ -21,8 +21,8 @@ import json
 import logging
 import subprocess
 from datetime import date, datetime
-
 import openpyxl
+import feedparser
 
 # ─── CONFIG ─────────────────────────────────────────────
 
@@ -53,20 +53,43 @@ def salvar_ids(ids):
     with open(ARQUIVO_IDS, "w", encoding="utf-8") as f:
         json.dump(list(ids), f, indent=2, ensure_ascii=False)
 
-# ─── COLETA (GARANTE DADOS SEMPRE) ──────────────────────
+# ─── COLETA REAL (RSS CORRIGIDO) ────────────────────────
 
-def coletar_mock():
-    return [{
-        "titulo": f"Bolsa Teste {datetime.now()}",
-        "fonte": "Teste",
-        "pais": "Brasil",
-        "area": "Administração",
-        "nivel": "Mestrado",
-        "prazo": "2026-12-01",
-        "link": "https://google.com",
-        "data_coleta": str(date.today()),
-        "ativa": "Sim"
-    }]
+def coletar_rss():
+    feeds = [
+        ("ScholarshipPortal", "https://www.scholarshipportal.com/rss/scholarships"),
+        ("FindAPhD", "https://www.findaphd.com/rss"),
+        ("AcademicPositions", "https://academicpositions.com/rss"),
+    ]
+
+    bolsas = []
+
+    for nome, url in feeds:
+        try:
+            feed = feedparser.parse(url)
+
+            if not feed.entries:
+                log.warning(f"Feed vazio: {nome}")
+                continue
+
+            for entry in feed.entries[:15]:
+                bolsas.append({
+                    "titulo": entry.get("title", "Sem título"),
+                    "fonte": nome,
+                    "pais": "Internacional",
+                    "area": "Não informado",
+                    "nivel": "Diversos",
+                    "prazo": "Não informado",
+                    "link": entry.get("link", ""),
+                    "data_coleta": str(date.today()),
+                    "ativa": "Sim"
+                })
+
+        except Exception as e:
+            log.warning(f"Erro no feed {nome}: {e}")
+
+    log.info(f"{len(bolsas)} bolsas coletadas via RSS")
+    return bolsas
 
 # ─── EXCEL ──────────────────────────────────────────────
 
@@ -76,7 +99,6 @@ COLUNAS = [
 ]
 
 def salvar_excel(bolsas, ids):
-    # cria workbook se não existir
     if not os.path.exists(ARQUIVO_EXCEL):
         wb = openpyxl.Workbook()
         ws = wb.active
@@ -106,7 +128,6 @@ def salvar_excel(bolsas, ids):
         adicionadas += 1
 
     wb.save(ARQUIVO_EXCEL)
-
     log.info(f"{adicionadas} novas bolsas adicionadas no Excel")
 
 # ─── HTML ───────────────────────────────────────────────
@@ -192,15 +213,23 @@ function filtrar(){{
 
     log.info("HTML gerado com sucesso")
 
-# ─── GITHUB ─────────────────────────────────────────────
+# ─── GITHUB (CORRIGIDO) ─────────────────────────────────
 
 def publicar():
     try:
         subprocess.run(["git", "-C", PASTA_SAIDA, "add", "."], check=True)
-        subprocess.run(["git", "-C", PASTA_SAIDA, "commit", "-m",
-                        f"update {date.today()}"], check=True)
+
+        subprocess.run([
+            "git", "-C", PASTA_SAIDA,
+            "commit", "-m", f"update {date.today()}"
+        ], check=False)
+
+        subprocess.run(["git", "-C", PASTA_SAIDA, "pull", "--rebase"], check=True)
+
         subprocess.run(["git", "-C", PASTA_SAIDA, "push"], check=True)
+
         log.info("GitHub atualizado")
+
     except Exception as e:
         log.warning(f"Erro no git: {e}")
 
@@ -211,7 +240,7 @@ def main():
 
     ids = carregar_ids()
 
-    bolsas = coletar_mock()
+    bolsas = coletar_rss()
 
     salvar_excel(bolsas, ids)
     salvar_ids(ids)
@@ -222,5 +251,4 @@ def main():
     log.info("Processo finalizado")
 
 if __name__ == "__main__":
-    main()
     main()
