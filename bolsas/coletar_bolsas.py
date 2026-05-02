@@ -21,9 +21,10 @@ import json
 import logging
 import subprocess
 from datetime import date, datetime
-import openpyxl
-import feedparser
+
 import requests
+from bs4 import BeautifulSoup
+import openpyxl
 
 # ─── CONFIG ─────────────────────────────────────────────
 
@@ -39,135 +40,233 @@ os.makedirs(PASTA_SAIDA, exist_ok=True)
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
-# ─── AUX ────────────────────────────────────────────────
+# ─── RESET (NOVO) ───────────────────────────────────────
 
-def gerar_id(fonte, titulo):
-    return f"{fonte}::{titulo[:80].lower()}"
+def resetar_excel():
+    """Apaga Excel antigo e cria novo do zero"""
+    if os.path.exists(ARQUIVO_EXCEL):
+        os.remove(ARQUIVO_EXCEL)
+        log.info("Excel antigo removido")
 
-def carregar_ids():
-    if os.path.exists(ARQUIVO_IDS):
-        with open(ARQUIVO_IDS, "r", encoding="utf-8") as f:
-            return set(json.load(f))
-    return set()
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Bolsas"
 
-def salvar_ids(ids):
-    with open(ARQUIVO_IDS, "w", encoding="utf-8") as f:
-        json.dump(list(ids), f, indent=2, ensure_ascii=False)
+    ws.append([
+        "titulo","fonte","pais","area",
+        "nivel","prazo","link","data_coleta","ativa"
+    ])
 
-# ─── COLETA REAL (RSS + FALLBACK) ───────────────────────
+    wb.save(ARQUIVO_EXCEL)
+    log.info("Excel recriado (zerado)")
 
-def coletar_rss():
-    feeds = [
-        ("Google Scholarships", "https://news.google.com/rss/search?q=phd+scholarship&hl=en&gl=US&ceid=US:en"),
-        ("Google Research", "https://news.google.com/rss/search?q=research+fellowship&hl=en&gl=US&ceid=US:en"),
-    ]
+# ─── COLETAS ────────────────────────────────────────────
 
+def coletar_cnpq():
+    url = "https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios"
     bolsas = []
 
-    headers = {
-        "User-Agent": "Mozilla/5.0"
-    }
+    try:
+        r = requests.get(url)
+        soup = BeautifulSoup(r.text, "html.parser")
 
-    for nome, url in feeds:
-        try:
-            response = requests.get(url, headers=headers, timeout=10)
+        for link in soup.select("a")[:20]:
+            titulo = link.text.strip()
 
-            feed = feedparser.parse(response.content)
-
-            if not feed.entries:
-                log.warning(f"Feed vazio: {nome}")
+            if len(titulo) < 10:
                 continue
 
-            for entry in feed.entries[:15]:
-                bolsas.append({
-                    "titulo": entry.get("title", "Sem título"),
-                    "fonte": nome,
-                    "pais": "Internacional",
-                    "area": "Pesquisa",
-                    "nivel": "Diversos",
-                    "prazo": "Não informado",
-                    "link": entry.get("link", ""),
-                    "data_coleta": str(date.today()),
-                    "ativa": "Sim"
-                })
+            bolsas.append({
+                "titulo": titulo,
+                "fonte": "CNPq",
+                "pais": "Brasil",
+                "area": "Pesquisa",
+                "nivel": "Diversos",
+                "prazo": "Consultar site",
+                "link": link.get("href"),
+                "data_coleta": str(date.today()),
+                "ativa": "Sim"
+            })
 
-        except Exception as e:
-            log.warning(f"Erro no feed {nome}: {e}")
+    except Exception as e:
+        log.warning(f"CNPq erro: {e}")
 
-    # 🔥 fallback
-    if not bolsas:
-        log.warning("Nenhum RSS retornou dados — usando fallback")
+    return bolsas
 
-        bolsas.append({
-            "titulo": f"Bolsa automática {datetime.now()}",
-            "fonte": "Fallback",
-            "pais": "Internacional",
-            "area": "Geral",
-            "nivel": "Diversos",
-            "prazo": "Não informado",
-            "link": "https://scholar.google.com",
-            "data_coleta": str(date.today()),
-            "ativa": "Sim"
-        })
+
+def coletar_capes():
+    url = "https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas"
+    bolsas = []
+
+    try:
+        r = requests.get(url)
+        soup = BeautifulSoup(r.text, "html.parser")
+
+        for link in soup.select("a")[:20]:
+            titulo = link.text.strip()
+
+            if len(titulo) < 10:
+                continue
+
+            bolsas.append({
+                "titulo": titulo,
+                "fonte": "CAPES",
+                "pais": "Brasil",
+                "area": "Educação",
+                "nivel": "Diversos",
+                "prazo": "Consultar site",
+                "link": link.get("href"),
+                "data_coleta": str(date.today()),
+                "ativa": "Sim"
+            })
+
+    except Exception as e:
+        log.warning(f"CAPES erro: {e}")
+
+    return bolsas
+
+
+def coletar_fapesp():
+    url = "https://fapesp.br/oportunidades"
+    bolsas = []
+
+    try:
+        r = requests.get(url)
+        soup = BeautifulSoup(r.text, "html.parser")
+
+        for item in soup.select("a")[:20]:
+            titulo = item.text.strip()
+
+            if len(titulo) < 10:
+                continue
+
+            bolsas.append({
+                "titulo": titulo,
+                "fonte": "FAPESP",
+                "pais": "Brasil",
+                "area": "Pesquisa",
+                "nivel": "Diversos",
+                "prazo": "Consultar site",
+                "link": "https://fapesp.br" + item.get("href", ""),
+                "data_coleta": str(date.today()),
+                "ativa": "Sim"
+            })
+
+    except Exception as e:
+        log.warning(f"FAPESP erro: {e}")
+
+    return bolsas
+
+
+def coletar_fulbright():
+    url = "https://fulbright.org.br/bolsas/"
+    bolsas = []
+
+    try:
+        r = requests.get(url)
+        soup = BeautifulSoup(r.text, "html.parser")
+
+        for item in soup.select("h2")[:10]:
+            titulo = item.text.strip()
+
+            bolsas.append({
+                "titulo": titulo,
+                "fonte": "Fulbright",
+                "pais": "Internacional",
+                "area": "Diversos",
+                "nivel": "Diversos",
+                "prazo": "Consultar site",
+                "link": url,
+                "data_coleta": str(date.today()),
+                "ativa": "Sim"
+            })
+
+    except Exception as e:
+        log.warning(f"Fulbright erro: {e}")
+
+    return bolsas
+
+
+def coletar_daad():
+    url = "https://www.daad.de/en/study-and-research-in-germany/scholarships/"
+    bolsas = []
+
+    try:
+        r = requests.get(url)
+        soup = BeautifulSoup(r.text, "html.parser")
+
+        for item in soup.select("a")[:20]:
+            titulo = item.text.strip()
+
+            if len(titulo) < 15:
+                continue
+
+            bolsas.append({
+                "titulo": titulo,
+                "fonte": "DAAD",
+                "pais": "Alemanha",
+                "area": "Diversos",
+                "nivel": "Diversos",
+                "prazo": "Consultar site",
+                "link": item.get("href"),
+                "data_coleta": str(date.today()),
+                "ativa": "Sim"
+            })
+
+    except Exception as e:
+        log.warning(f"DAAD erro: {e}")
+
+    return bolsas
+
+
+def coletar_horizon():
+    return [{
+        "titulo": "Chamadas Horizon Europe (Portal Oficial)",
+        "fonte": "Horizon Europe",
+        "pais": "Europa",
+        "area": "Pesquisa",
+        "nivel": "Doutorado/Pós-doc",
+        "prazo": "Variável",
+        "link": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/",
+        "data_coleta": str(date.today()),
+        "ativa": "Sim"
+    }]
+
+# ─── COLETOR PRINCIPAL ──────────────────────────────────
+
+def coletar_bolsas():
+    bolsas = []
+    bolsas += coletar_cnpq()
+    bolsas += coletar_capes()
+    bolsas += coletar_fapesp()
+    bolsas += coletar_fulbright()
+    bolsas += coletar_daad()
+    bolsas += coletar_horizon()
 
     log.info(f"{len(bolsas)} bolsas coletadas")
     return bolsas
 
 # ─── EXCEL ──────────────────────────────────────────────
 
-COLUNAS = [
-    "titulo","fonte","pais","area",
-    "nivel","prazo","link","data_coleta","ativa"
-]
-
-def salvar_excel(bolsas, ids):
-    if not os.path.exists(ARQUIVO_EXCEL):
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = "Bolsas"
-        ws.append(COLUNAS)
-        wb.save(ARQUIVO_EXCEL)
-        log.info("Excel criado")
-
+def salvar_excel(bolsas):
     wb = openpyxl.load_workbook(ARQUIVO_EXCEL)
     ws = wb.active
 
-    adicionadas = 0
-
     for b in bolsas:
-        bid = gerar_id(b["fonte"], b["titulo"])
-
-        if bid in ids:
-            continue
-
-        ws.append([
-            b["titulo"], b["fonte"], b["pais"], b["area"],
-            b["nivel"], b["prazo"], b["link"],
-            b["data_coleta"], b["ativa"]
-        ])
-
-        ids.add(bid)
-        adicionadas += 1
+        ws.append(list(b.values()))
 
     wb.save(ARQUIVO_EXCEL)
-    log.info(f"{adicionadas} novas bolsas adicionadas no Excel")
+    log.info("Excel preenchido")
 
 # ─── HTML ───────────────────────────────────────────────
 
 def gerar_html():
-    if not os.path.exists(ARQUIVO_EXCEL):
-        log.error("Excel não existe — HTML não pode ser gerado")
-        return
-
     wb = openpyxl.load_workbook(ARQUIVO_EXCEL)
     ws = wb.active
 
     linhas = ""
 
     for row in ws.iter_rows(min_row=2, values_only=True):
-        if not row[0]:
-            continue
-
         linhas += f"""
         <tr>
           <td>{row[0]}</td>
@@ -179,79 +278,36 @@ def gerar_html():
         </tr>
         """
 
-    if not linhas:
-        linhas = "<tr><td colspan='6'>Nenhuma bolsa encontrada</td></tr>"
-
     html = f"""
-<!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>Bolsas</title>
-<style>
-body{{font-family:sans-serif;max-width:1100px;margin:auto}}
-table{{width:100%;border-collapse:collapse}}
-th{{background:#1F3864;color:white}}
-td,th{{padding:8px;border:1px solid #ddd}}
-</style>
-</head>
 <body>
-
 <h1>Bolsas de Pesquisa</h1>
-<p>Atualizado em {date.today()}</p>
+<p>{date.today()}</p>
 
-<input type="text" id="busca" placeholder="Buscar..." onkeyup="filtrar()">
-
-<table id="tabela">
-<thead>
-<tr>
-<th>Título</th><th>Fonte</th><th>País</th>
-<th>Nível</th><th>Prazo</th><th>Link</th>
-</tr>
-</thead>
-
-<tbody>
+<table border="1">
+<tr><th>Título</th><th>Fonte</th><th>País</th><th>Nível</th><th>Prazo</th><th>Link</th></tr>
 {linhas}
-</tbody>
 </table>
-
-<script>
-function filtrar(){{
-  let input = document.getElementById("busca").value.toLowerCase();
-  document.querySelectorAll("#tabela tbody tr").forEach(tr => {{
-    tr.style.display = tr.innerText.toLowerCase().includes(input) ? "" : "none";
-  }});
-}}
-</script>
 
 </body>
 </html>
 """
 
-    caminho = os.path.join(PASTA_SAIDA, "index.html")
-
-    with open(caminho, "w", encoding="utf-8") as f:
+    with open(os.path.join(PASTA_SAIDA, "index.html"), "w", encoding="utf-8") as f:
         f.write(html)
 
-    log.info("HTML gerado com sucesso")
+    log.info("HTML gerado")
 
 # ─── GITHUB ─────────────────────────────────────────────
 
 def publicar():
     try:
         subprocess.run(["git", "-C", PASTA_SAIDA, "add", "."], check=True)
-
-        subprocess.run([
-            "git", "-C", PASTA_SAIDA,
-            "commit", "-m", f"update {date.today()}"
-        ], check=False)
-
+        subprocess.run(["git", "-C", PASTA_SAIDA, "commit", "-m",
+                        f"update {date.today()}"], check=False)
         subprocess.run(["git", "-C", PASTA_SAIDA, "pull", "--rebase"], check=True)
-
         subprocess.run(["git", "-C", PASTA_SAIDA, "push"], check=True)
-
         log.info("GitHub atualizado")
-
     except Exception as e:
         log.warning(f"Erro no git: {e}")
 
@@ -260,14 +316,14 @@ def publicar():
 def main():
     log.info("Iniciando processo")
 
-    ids = carregar_ids()
+    resetar_excel()
 
-    bolsas = coletar_rss()
+    bolsas = coletar_bolsas()
 
-    salvar_excel(bolsas, ids)
-    salvar_ids(ids)
+    salvar_excel(bolsas)
 
     gerar_html()
+
     publicar()
 
     log.info("Processo finalizado")
