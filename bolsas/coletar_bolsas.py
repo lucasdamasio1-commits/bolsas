@@ -23,6 +23,7 @@ import subprocess
 from datetime import date, datetime
 import openpyxl
 import feedparser
+import requests
 
 # ─── CONFIG ─────────────────────────────────────────────
 
@@ -53,20 +54,25 @@ def salvar_ids(ids):
     with open(ARQUIVO_IDS, "w", encoding="utf-8") as f:
         json.dump(list(ids), f, indent=2, ensure_ascii=False)
 
-# ─── COLETA REAL (RSS CORRIGIDO) ────────────────────────
+# ─── COLETA REAL (RSS + FALLBACK) ───────────────────────
 
 def coletar_rss():
     feeds = [
-        ("ScholarshipPortal", "https://www.scholarshipportal.com/rss/scholarships"),
-        ("FindAPhD", "https://www.findaphd.com/rss"),
-        ("AcademicPositions", "https://academicpositions.com/rss"),
+        ("Google Scholarships", "https://news.google.com/rss/search?q=phd+scholarship&hl=en&gl=US&ceid=US:en"),
+        ("Google Research", "https://news.google.com/rss/search?q=research+fellowship&hl=en&gl=US&ceid=US:en"),
     ]
 
     bolsas = []
 
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+
     for nome, url in feeds:
         try:
-            feed = feedparser.parse(url)
+            response = requests.get(url, headers=headers, timeout=10)
+
+            feed = feedparser.parse(response.content)
 
             if not feed.entries:
                 log.warning(f"Feed vazio: {nome}")
@@ -77,7 +83,7 @@ def coletar_rss():
                     "titulo": entry.get("title", "Sem título"),
                     "fonte": nome,
                     "pais": "Internacional",
-                    "area": "Não informado",
+                    "area": "Pesquisa",
                     "nivel": "Diversos",
                     "prazo": "Não informado",
                     "link": entry.get("link", ""),
@@ -88,7 +94,23 @@ def coletar_rss():
         except Exception as e:
             log.warning(f"Erro no feed {nome}: {e}")
 
-    log.info(f"{len(bolsas)} bolsas coletadas via RSS")
+    # 🔥 fallback
+    if not bolsas:
+        log.warning("Nenhum RSS retornou dados — usando fallback")
+
+        bolsas.append({
+            "titulo": f"Bolsa automática {datetime.now()}",
+            "fonte": "Fallback",
+            "pais": "Internacional",
+            "area": "Geral",
+            "nivel": "Diversos",
+            "prazo": "Não informado",
+            "link": "https://scholar.google.com",
+            "data_coleta": str(date.today()),
+            "ativa": "Sim"
+        })
+
+    log.info(f"{len(bolsas)} bolsas coletadas")
     return bolsas
 
 # ─── EXCEL ──────────────────────────────────────────────
@@ -213,7 +235,7 @@ function filtrar(){{
 
     log.info("HTML gerado com sucesso")
 
-# ─── GITHUB (CORRIGIDO) ─────────────────────────────────
+# ─── GITHUB ─────────────────────────────────────────────
 
 def publicar():
     try:
