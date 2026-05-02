@@ -1,0 +1,105 @@
+MONITOR DE BOLSAS DE PESQUISA
+==============================
+Instruções de instalação e agendamento no Windows
+
+─────────────────────────────────────────────
+1. INSTALAR PYTHON (se ainda não tiver)
+─────────────────────────────────────────────
+Baixe em: https://www.python.org/downloads/
+Durante a instalação, marque "Add Python to PATH".
+
+─────────────────────────────────────────────
+2. INSTALAR AS DEPENDÊNCIAS
+─────────────────────────────────────────────
+Abra o Prompt de Comando (Win+R → cmd) e cole:
+
+    pip install requests beautifulsoup4 openpyxl feedparser lxml
+
+─────────────────────────────────────────────
+3. CONFIGURAR A PASTA DE SAÍDA (opcional)
+─────────────────────────────────────────────
+Abra o arquivo coletar_bolsas.py em qualquer editor de texto.
+Na linha com PASTA_SAIDA, você pode trocar para o seu OneDrive:
+
+    PASTA_SAIDA = r"C:\Users\SeuNome\OneDrive\Bolsas"
+
+Isso faz com que o Excel seja sincronizado automaticamente
+com o OneDrive, ficando acessível pelo Power BI online.
+
+─────────────────────────────────────────────
+4. TESTAR O SCRIPT MANUALMENTE
+─────────────────────────────────────────────
+No Prompt de Comando, navegue até a pasta do script e rode:
+
+    python coletar_bolsas.py
+
+Se funcionar, o arquivo bolsas_pesquisa.xlsx será criado
+em Documentos\BolsasPesquisa (ou no caminho que você definiu).
+
+─────────────────────────────────────────────
+5. AGENDAR NO WINDOWS TASK SCHEDULER
+─────────────────────────────────────────────
+Este é o jeito mais simples de rodar o script todo dia
+sem precisar do GitHub, servidores ou qualquer conta extra.
+
+Passo a passo:
+
+a) Abra o Agendador de Tarefas:
+   Win+R → taskschd.msc → Enter
+
+b) No painel direito, clique em "Criar Tarefa Básica..."
+
+c) Nome: Monitor de Bolsas
+   Descrição: Coleta diária de oportunidades de bolsas
+
+d) Gatilho: Diariamente
+   Horário sugerido: 07:00 (quando seu PC já está ligado)
+
+e) Ação: Iniciar um programa
+   Programa/script: python
+       (ou o caminho completo, ex: C:\Users\SeuNome\AppData\Local\Programs\Python\Python312\python.exe)
+   Argumentos:
+       C:\Caminho\Completo\Para\coletar_bolsas.py
+   (troque pelo caminho real do arquivo no seu computador)
+
+f) Marque "Abrir a caixa de diálogo Propriedades após clicar em Concluir"
+
+g) Na aba "Configurações":
+   - Marque "Executar a tarefa o mais rápido possível após o início agendado ser ignorado"
+     (garante execução caso o PC estivesse desligado no horário)
+
+h) Clique em OK.
+
+Para testar: clique com botão direito na tarefa criada → Executar.
+─────────────────────────────────────────────
+
+DICA: COMO ENCONTRAR O CAMINHO DO PYTHON
+─────────────────────────────────────────────
+No Prompt de Comando, execute:
+    where python
+
+Copie o caminho exibido e use-o no campo "Programa/script"
+do Task Scheduler (ex: C:\Users\Nome\AppData\Local\Programs\Python\Python312\python.exe).
+
+─────────────────────────────────────────────
+6. CONECTAR AO POWER BI
+─────────────────────────────────────────────
+No Power BI Desktop:
+  Página inicial → Obter Dados → Excel
+  → Navegue até bolsas_pesquisa.xlsx
+  → Selecione a tabela "Bolsas" → Carregar
+
+Para atualização automática, salve o .xlsx no OneDrive e publique
+o relatório no Power BI Service (plano gratuito suporta atualização manual;
+plano Pro suporta atualização agendada automática).
+
+─────────────────────────────────────────────
+7. SOLUÇÃO DE PROBLEMAS
+─────────────────────────────────────────────
+- Se uma fonte não retornar dados: verifique o log em
+  Documentos\BolsasPesquisa\coleta.log
+- Sites como CNPq e CAPES mudam o HTML com frequência.
+  Se parar de funcionar, abra o site, inspecione o HTML (F12)
+  e ajuste os seletores CSS na função correspondente.
+- Para rodar sem abrir janela: no Task Scheduler, aba "Geral",
+  marque "Executar independentemente do logon do usuário".

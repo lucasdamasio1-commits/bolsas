@@ -1,0 +1,505 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Bolsas</title>
+
+<style>
+body{font-family:Arial;max-width:1100px;margin:auto;padding:20px}
+table{width:100%;border-collapse:collapse}
+th{background:#1F3864;color:white}
+td,th{padding:8px;border:1px solid #ddd}
+</style>
+
+</head>
+<body>
+
+<h1>Bolsas de Pesquisa</h1>
+<p>Atualizado em 2026-05-02</p>
+
+<input type="text" id="busca" placeholder="Buscar..." onkeyup="filtrar()">
+
+<table id="tabela">
+<thead>
+<tr>
+<th>Título</th><th>Fonte</th><th>País</th>
+<th>Nível</th><th>Prazo</th><th>Link</th>
+</tr>
+</thead>
+
+<tbody>
+
+        <tr>
+          <td>Bolsas e Auxílios</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Bolsas no País e no Exterior</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/copy_of_modalidades" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Auxílios</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/auxilios-1" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Cartão Pesquisa</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/auxilios-cartao-pesquisa" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Pesquisa em Pauta</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/assuntos/noticias/pesquisa-do-dia" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Relatório de Pesquisa</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/assuntos/popularizacao-da-ciencia/relatorios-de-pesquisa" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Sisgen Pesquisa</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://sisgen-pesquisa.cnpq.br" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Serviços para Imigrantes</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/pt-br/temas/servicos-para-imigrantes" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Educação e Pesquisa</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/pt-br/noticias/educacao-e-pesquisa" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Bolsas no País e no Exterior</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/copy_of_modalidades" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Auxílios</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/auxilios-1" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Cartão Pesquisa</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/auxilios-cartao-pesquisa" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Painel de Bolsas e Projetos VigentesFornece uma fotografia do fomento atual do CNPq. Além do número total de projetos ou de bolsas vigentes em cada uma das 13 dimensões disponibilizadas.</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/mapa-de-fomento-em-ciencia-tecnologia-e-inovacao" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Bolsas e Auxílios</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Bolsas no País e no Exterior</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/copy_of_modalidades" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Auxílios</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/auxilios-1" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Cartão Pesquisa</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/auxilios-cartao-pesquisa" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Pesquisa em Pauta</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/assuntos/noticias/pesquisa-do-dia" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Relatório de Pesquisa</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/cnpq/pt-br/assuntos/popularizacao-da-ciencia/relatorios-de-pesquisa" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Sisgen Pesquisa</td>
+          <td>CNPq</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://sisgen-pesquisa.cnpq.br" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Prêmio CAPES/Fundação Grupo Volkswagen de Excelência em Pesquisa em Mobilidade Urbana Sustentável</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/assuntos/premios/premio-capes-fundacao-grupo-volkswagen-de-excelencia-em-pesquisa-em-mobilidade-urbana-sustentavel" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Prêmio CAPES - Natura Campus de Excelência em Pesquisa</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/assuntos/premios/premio-capes-natura" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Seminário Estruturas em Aço, Ensino e Pesquisa Científica e Tecnológica.</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/assuntos/eventos/seminario-estruturas-em-aco-ensino-e-pesquisa-cientifica-e-tecnologica" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Bolsas e Estudantes</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Edital seleção</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/servidores/edital-selecao" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Bolsas e Auxílios Internacionais</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/perguntas-frequentes/bolsas-e-auxilios-internacionais" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Programas e Bolsas no País</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/perguntas-frequentes/programas-e-bolsas-no-pais" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Pesquisa Pública</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://sei.capes.gov.br/sei/modulos/pesquisa/md_pesq_processo_pesquisar.php?acao_externa=protocolo_pesquisar&acao_origem_externa=protocolo_pesquisar&id_orgao_acesso_externo=1" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Auxílio Financeiro a Projeto Educacional ou de Pesquisa e Pós-Graduação - AUXPE</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pós-doc</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/prestacao-de-contas-e-cobranca-administrativa/auxilio-financeiro-a-projeto-educacional-ou-de-pesquisa-e-pos-graduacao-auxpe" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Manual Cartão Pesquisador</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/centrais-de-conteudo/documentos/09042024_manual-cartao-pesquisador-capes-2024-v04.pdf" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Termo Uso e Politica de Privacidade App Pesquisador</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados-pessoais/termo-uso-e-politica-de-privacidade-app-pesquisador" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Serviços para Imigrantes</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/pt-br/temas/servicos-para-imigrantes" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Educação e Pesquisa</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/pt-br/noticias/educacao-e-pesquisa" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Bolsas e Auxílios Internacionais</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas/bolsas-e-auxilios-internacionais/" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Valores de Bolsas</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas/prestacao-de-contas/valores-de-bolsas" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Prêmio CAPES/Fundação Grupo Volkswagen de Excelência em Pesquisa em Mobilidade Urbana Sustentável</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/assuntos/premios/premio-capes-fundacao-grupo-volkswagen-de-excelencia-em-pesquisa-em-mobilidade-urbana-sustentavel" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Prêmio CAPES - Natura Campus de Excelência em Pesquisa</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/assuntos/premios/premio-capes-natura" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Seminário Estruturas em Aço, Ensino e Pesquisa Científica e Tecnológica.</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/assuntos/eventos/seminario-estruturas-em-aco-ensino-e-pesquisa-cientifica-e-tecnologica" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Bolsas e Estudantes</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Edital seleção</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/servidores/edital-selecao" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Bolsas e Auxílios Internacionais</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/perguntas-frequentes/bolsas-e-auxilios-internacionais" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Programas e Bolsas no País</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/perguntas-frequentes/programas-e-bolsas-no-pais" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Pesquisa Pública</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://sei.capes.gov.br/sei/modulos/pesquisa/md_pesq_processo_pesquisar.php?acao_externa=protocolo_pesquisar&acao_origem_externa=protocolo_pesquisar&id_orgao_acesso_externo=1" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Auxílio Financeiro a Projeto Educacional ou de Pesquisa e Pós-Graduação - AUXPE</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pós-doc</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/prestacao-de-contas-e-cobranca-administrativa/auxilio-financeiro-a-projeto-educacional-ou-de-pesquisa-e-pos-graduacao-auxpe" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Manual Cartão Pesquisador</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/centrais-de-conteudo/documentos/09042024_manual-cartao-pesquisador-capes-2024-v04.pdf" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Termo Uso e Politica de Privacidade App Pesquisador</td>
+          <td>CAPES</td>
+          <td>Brasil</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados-pessoais/termo-uso-e-politica-de-privacidade-app-pesquisador" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Bolsas</td>
+          <td>Fulbright</td>
+          <td>Internacional</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://fulbright.org.br/bolsas//bolsas-para-brasileiros" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Fulbright dobra número de bolsas de doutorado sanduíche nos EUA e reajusta valores em até 120%</td>
+          <td>Fulbright</td>
+          <td>Internacional</td>
+          <td>Doutorado</td>
+          <td>Consultar edital</td>
+          <td><a href="https://fulbright.org.br/noticias/fulbright-dobra-numero-de-bolsas-de-doutorado-sanduiche-nos-eua/" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>other selected funding organisations</td>
+          <td>DAAD</td>
+          <td>Alemanha</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.daad.de/en/study-and-research-in-germany/scholarships/scholarship-database/information-on-other-funding-organisations/" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>important scholarship information</td>
+          <td>DAAD</td>
+          <td>Alemanha</td>
+          <td>Pesquisa / Geral</td>
+          <td>Consultar edital</td>
+          <td><a href="https://www.daad.de/en/study-and-research-in-germany/scholarships/important-information-for-scholarship-applicants/" target="_blank">Abrir</a></td>
+        </tr>
+        
+        <tr>
+          <td>Horizon Europe – Funding & Tenders Portal</td>
+          <td>Horizon Europe</td>
+          <td>Europa</td>
+          <td>Doutorado/Pós-doc</td>
+          <td>Variável</td>
+          <td><a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/" target="_blank">Abrir</a></td>
+        </tr>
+        
+</tbody>
+</table>
+
+<script>
+function filtrar(){
+  let input = document.getElementById("busca").value.toLowerCase();
+  document.querySelectorAll("#tabela tbody tr").forEach(tr => {
+    tr.style.display = tr.innerText.toLowerCase().includes(input) ? "" : "none";
+  });
+}
+</script>
+
+</body>
+</html>
