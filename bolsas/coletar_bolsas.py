@@ -17,10 +17,9 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
 from datetime import datetime, date
 import os
-import json
 import logging
 import subprocess
-from datetime import date, datetime
+from datetime import date
 
 import requests
 from bs4 import BeautifulSoup
@@ -31,7 +30,6 @@ import openpyxl
 PASTA_SAIDA = r"C:\Users\lucas\OneDrive\Doutorado\Scripts\bolsas"
 
 ARQUIVO_EXCEL = os.path.join(PASTA_SAIDA, "bolsas_pesquisa.xlsx")
-ARQUIVO_IDS   = os.path.join(PASTA_SAIDA, "ids_vistos.json")
 
 os.makedirs(PASTA_SAIDA, exist_ok=True)
 
@@ -40,188 +38,136 @@ os.makedirs(PASTA_SAIDA, exist_ok=True)
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
-# ─── RESET (NOVO) ───────────────────────────────────────
+# ─── PALAVRAS-CHAVE (PT + EN) ───────────────────────────
 
-def resetar_excel():
-    """Apaga Excel antigo e cria novo do zero"""
-    if os.path.exists(ARQUIVO_EXCEL):
-        os.remove(ARQUIVO_EXCEL)
-        log.info("Excel antigo removido")
+PALAVRAS_CHAVE = [
+    # PT
+    "bolsa", "edital", "pesquisa", "doutorado", "mestrado",
+    "pós-doutorado", "financiamento", "auxílio",
 
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Bolsas"
+    # EN
+    "scholarship", "fellowship", "grant", "funding",
+    "phd", "doctoral", "master", "research",
+    "call for applications", "open call"
+]
 
-    ws.append([
-        "titulo","fonte","pais","area",
-        "nivel","prazo","link","data_coleta","ativa"
-    ])
+EXCLUIR = [
+    "ir para", "menu", "navegação", "mapa",
+    "login", "home", "início", "imposto",
+    "acesso", "institucional", "organograma",
+    "privacy", "terms", "cookies"
+]
 
-    wb.save(ARQUIVO_EXCEL)
-    log.info("Excel recriado (zerado)")
+# ─── FUNÇÕES INTELIGENTES ──────────────────────────────
 
-# ─── COLETAS ────────────────────────────────────────────
+def detectar_nivel(texto):
+    if "phd" in texto or "doutorado" in texto:
+        return "Doutorado"
+    elif "master" in texto or "mestrado" in texto:
+        return "Mestrado"
+    elif "postdoc" in texto or "pós" in texto:
+        return "Pós-doc"
+    else:
+        return "Pesquisa / Geral"
 
-def coletar_cnpq():
-    url = "https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios"
+
+def link_valido(link, base):
+    if not link:
+        return None
+
+    if link.startswith("http"):
+        return link
+
+    if link.startswith("/"):
+        return base + link
+
+    return None
+
+
+def extrair_links_filtrados(url, fonte, pais):
     bolsas = []
 
     try:
-        r = requests.get(url)
+        r = requests.get(url, timeout=10)
         soup = BeautifulSoup(r.text, "html.parser")
 
-        for link in soup.select("a")[:20]:
-            titulo = link.text.strip()
+        for a in soup.find_all("a"):
+            titulo = a.get_text(strip=True)
+            link = a.get("href")
 
-            if len(titulo) < 10:
+            if not titulo or not link:
+                continue
+
+            titulo_lower = titulo.lower()
+
+            # filtro positivo
+            if not any(p in titulo_lower for p in PALAVRAS_CHAVE):
+                continue
+
+            # filtro negativo
+            if any(e in titulo_lower for e in EXCLUIR):
+                continue
+
+            link = link_valido(link, url)
+
+            if not link:
                 continue
 
             bolsas.append({
                 "titulo": titulo,
-                "fonte": "CNPq",
-                "pais": "Brasil",
+                "fonte": fonte,
+                "pais": pais,
                 "area": "Pesquisa",
-                "nivel": "Diversos",
-                "prazo": "Consultar site",
-                "link": link.get("href"),
+                "nivel": detectar_nivel(titulo_lower),
+                "prazo": "Consultar edital",
+                "link": link,
                 "data_coleta": str(date.today()),
                 "ativa": "Sim"
             })
 
     except Exception as e:
-        log.warning(f"CNPq erro: {e}")
+        log.warning(f"{fonte} erro: {e}")
 
     return bolsas
 
+# ─── COLETA POR FONTE ──────────────────────────────────
 
-def coletar_capes():
-    url = "https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas"
+def coletar_bolsas():
     bolsas = []
 
-    try:
-        r = requests.get(url)
-        soup = BeautifulSoup(r.text, "html.parser")
+    bolsas += extrair_links_filtrados(
+        "https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios",
+        "CNPq",
+        "Brasil"
+    )
 
-        for link in soup.select("a")[:20]:
-            titulo = link.text.strip()
+    bolsas += extrair_links_filtrados(
+        "https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas",
+        "CAPES",
+        "Brasil"
+    )
 
-            if len(titulo) < 10:
-                continue
+    bolsas += extrair_links_filtrados(
+        "https://fapesp.br/oportunidades",
+        "FAPESP",
+        "Brasil"
+    )
 
-            bolsas.append({
-                "titulo": titulo,
-                "fonte": "CAPES",
-                "pais": "Brasil",
-                "area": "Educação",
-                "nivel": "Diversos",
-                "prazo": "Consultar site",
-                "link": link.get("href"),
-                "data_coleta": str(date.today()),
-                "ativa": "Sim"
-            })
+    bolsas += extrair_links_filtrados(
+        "https://fulbright.org.br/bolsas/",
+        "Fulbright",
+        "Internacional"
+    )
 
-    except Exception as e:
-        log.warning(f"CAPES erro: {e}")
+    bolsas += extrair_links_filtrados(
+        "https://www.daad.de/en/study-and-research-in-germany/scholarships/",
+        "DAAD",
+        "Alemanha"
+    )
 
-    return bolsas
-
-
-def coletar_fapesp():
-    url = "https://fapesp.br/oportunidades"
-    bolsas = []
-
-    try:
-        r = requests.get(url)
-        soup = BeautifulSoup(r.text, "html.parser")
-
-        for item in soup.select("a")[:20]:
-            titulo = item.text.strip()
-
-            if len(titulo) < 10:
-                continue
-
-            bolsas.append({
-                "titulo": titulo,
-                "fonte": "FAPESP",
-                "pais": "Brasil",
-                "area": "Pesquisa",
-                "nivel": "Diversos",
-                "prazo": "Consultar site",
-                "link": "https://fapesp.br" + item.get("href", ""),
-                "data_coleta": str(date.today()),
-                "ativa": "Sim"
-            })
-
-    except Exception as e:
-        log.warning(f"FAPESP erro: {e}")
-
-    return bolsas
-
-
-def coletar_fulbright():
-    url = "https://fulbright.org.br/bolsas/"
-    bolsas = []
-
-    try:
-        r = requests.get(url)
-        soup = BeautifulSoup(r.text, "html.parser")
-
-        for item in soup.select("h2")[:10]:
-            titulo = item.text.strip()
-
-            bolsas.append({
-                "titulo": titulo,
-                "fonte": "Fulbright",
-                "pais": "Internacional",
-                "area": "Diversos",
-                "nivel": "Diversos",
-                "prazo": "Consultar site",
-                "link": url,
-                "data_coleta": str(date.today()),
-                "ativa": "Sim"
-            })
-
-    except Exception as e:
-        log.warning(f"Fulbright erro: {e}")
-
-    return bolsas
-
-
-def coletar_daad():
-    url = "https://www.daad.de/en/study-and-research-in-germany/scholarships/"
-    bolsas = []
-
-    try:
-        r = requests.get(url)
-        soup = BeautifulSoup(r.text, "html.parser")
-
-        for item in soup.select("a")[:20]:
-            titulo = item.text.strip()
-
-            if len(titulo) < 15:
-                continue
-
-            bolsas.append({
-                "titulo": titulo,
-                "fonte": "DAAD",
-                "pais": "Alemanha",
-                "area": "Diversos",
-                "nivel": "Diversos",
-                "prazo": "Consultar site",
-                "link": item.get("href"),
-                "data_coleta": str(date.today()),
-                "ativa": "Sim"
-            })
-
-    except Exception as e:
-        log.warning(f"DAAD erro: {e}")
-
-    return bolsas
-
-
-def coletar_horizon():
-    return [{
-        "titulo": "Chamadas Horizon Europe (Portal Oficial)",
+    # Horizon (manual — melhor abordagem)
+    bolsas.append({
+        "titulo": "Horizon Europe – Funding & Tenders Portal",
         "fonte": "Horizon Europe",
         "pais": "Europa",
         "area": "Pesquisa",
@@ -230,35 +176,30 @@ def coletar_horizon():
         "link": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/",
         "data_coleta": str(date.today()),
         "ativa": "Sim"
-    }]
+    })
 
-# ─── COLETOR PRINCIPAL ──────────────────────────────────
-
-def coletar_bolsas():
-    bolsas = []
-    bolsas += coletar_cnpq()
-    bolsas += coletar_capes()
-    bolsas += coletar_fapesp()
-    bolsas += coletar_fulbright()
-    bolsas += coletar_daad()
-    bolsas += coletar_horizon()
-
-    log.info(f"{len(bolsas)} bolsas coletadas")
+    log.info(f"{len(bolsas)} bolsas coletadas (filtradas)")
     return bolsas
 
-# ─── EXCEL ──────────────────────────────────────────────
+# ─── EXCEL (ZERADO SEMPRE) ─────────────────────────────
 
 def salvar_excel(bolsas):
-    wb = openpyxl.load_workbook(ARQUIVO_EXCEL)
+    wb = openpyxl.Workbook()
     ws = wb.active
+
+    ws.append([
+        "titulo","fonte","pais","area",
+        "nivel","prazo","link","data_coleta","ativa"
+    ])
 
     for b in bolsas:
         ws.append(list(b.values()))
 
     wb.save(ARQUIVO_EXCEL)
-    log.info("Excel preenchido")
 
-# ─── HTML ───────────────────────────────────────────────
+    log.info("Excel recriado com dados novos")
+
+# ─── HTML ──────────────────────────────────────────────
 
 def gerar_html():
     wb = openpyxl.load_workbook(ARQUIVO_EXCEL)
@@ -279,15 +220,48 @@ def gerar_html():
         """
 
     html = f"""
+<!DOCTYPE html>
 <html>
-<body>
-<h1>Bolsas de Pesquisa</h1>
-<p>{date.today()}</p>
+<head>
+<meta charset="UTF-8">
+<title>Bolsas</title>
 
-<table border="1">
-<tr><th>Título</th><th>Fonte</th><th>País</th><th>Nível</th><th>Prazo</th><th>Link</th></tr>
+<style>
+body{{font-family:Arial;max-width:1100px;margin:auto;padding:20px}}
+table{{width:100%;border-collapse:collapse}}
+th{{background:#1F3864;color:white}}
+td,th{{padding:8px;border:1px solid #ddd}}
+</style>
+
+</head>
+<body>
+
+<h1>Bolsas de Pesquisa</h1>
+<p>Atualizado em {date.today()}</p>
+
+<input type="text" id="busca" placeholder="Buscar..." onkeyup="filtrar()">
+
+<table id="tabela">
+<thead>
+<tr>
+<th>Título</th><th>Fonte</th><th>País</th>
+<th>Nível</th><th>Prazo</th><th>Link</th>
+</tr>
+</thead>
+
+<tbody>
 {linhas}
+</tbody>
 </table>
+
+<script>
+function filtrar(){{
+  let input = document.getElementById("busca").value.toLowerCase();
+  document.querySelectorAll("#tabela tbody tr").forEach(tr => {{
+    tr.style.display = tr.innerText.toLowerCase().includes(input) ? "" : "none";
+  }});
+}}
+</script>
 
 </body>
 </html>
@@ -296,7 +270,7 @@ def gerar_html():
     with open(os.path.join(PASTA_SAIDA, "index.html"), "w", encoding="utf-8") as f:
         f.write(html)
 
-    log.info("HTML gerado")
+    log.info("HTML atualizado")
 
 # ─── GITHUB ─────────────────────────────────────────────
 
@@ -315,8 +289,6 @@ def publicar():
 
 def main():
     log.info("Iniciando processo")
-
-    resetar_excel()
 
     bolsas = coletar_bolsas()
 
