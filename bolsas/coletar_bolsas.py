@@ -205,7 +205,160 @@ def main():
 
     salvar_ids_vistos(ids_vistos)
 
-    gerar_html()
+    def gerar_html():
+    import openpyxl
+    from datetime import date
+    import os
+
+    wb = openpyxl.load_workbook(ARQUIVO_EXCEL)
+    ws = wb.active
+
+    linhas = ""
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        if not row[0]:
+            continue
+
+        linhas += f"""
+        <tr>
+          <td>{row[0]}</td>
+          <td>{row[1]}</td>
+          <td>{row[2]}</td>
+          <td>{row[4]}</td>
+          <td>{row[5]}</td>
+          <td><a href="{row[6]}" target="_blank">Abrir</a></td>
+        </tr>
+        """
+
+    html = f"""<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Bolsas de Pesquisa</title>
+
+<style>
+body {{
+  font-family: Arial;
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}}
+
+h1 {{
+  margin-bottom: 5px;
+}}
+
+.filtros {{
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}}
+
+input, select {{
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}}
+
+table {{
+  width: 100%;
+  border-collapse: collapse;
+}}
+
+th {{
+  background: #1F3864;
+  color: white;
+  padding: 8px;
+}}
+
+td {{
+  padding: 7px;
+  border-bottom: 1px solid #eee;
+}}
+
+tr:nth-child(even) {{
+  background: #f5f8ff;
+}}
+
+a {{
+  color: #1F3864;
+  text-decoration: none;
+  font-weight: bold;
+}}
+</style>
+
+</head>
+<body>
+
+<h1>Bolsas de Pesquisa</h1>
+<p>Atualizado em: {date.today()}</p>
+
+<div class="filtros">
+  <input id="busca" placeholder="Buscar título..." oninput="filtrar()">
+
+  <select id="fonte" onchange="filtrar()">
+    <option value="">Todas fontes</option>
+    <option>CNPq</option>
+    <option>CAPES</option>
+    <option>FAPESP</option>
+    <option>Fulbright</option>
+    <option>DAAD</option>
+  </select>
+
+  <select id="pais" onchange="filtrar()">
+    <option value="">Todos países</option>
+    <option>Brasil</option>
+    <option>Estados Unidos</option>
+    <option>Alemanha</option>
+    <option>Internacional</option>
+  </select>
+</div>
+
+<table id="tabela">
+<thead>
+<tr>
+  <th>Título</th>
+  <th>Fonte</th>
+  <th>País</th>
+  <th>Nível</th>
+  <th>Prazo</th>
+  <th>Link</th>
+</tr>
+</thead>
+
+<tbody>
+{linhas}
+</tbody>
+</table>
+
+<script>
+function filtrar() {{
+  const busca = document.getElementById("busca").value.toLowerCase();
+  const fonte = document.getElementById("fonte").value;
+  const pais = document.getElementById("pais").value;
+
+  document.querySelectorAll("#tabela tbody tr").forEach(tr => {{
+    const texto = tr.innerText.toLowerCase();
+    const cells = tr.cells;
+
+    const okBusca = !busca || texto.includes(busca);
+    const okFonte = !fonte || cells[1].innerText === fonte;
+    const okPais = !pais || cells[2].innerText === pais;
+
+    tr.style.display = (okBusca && okFonte && okPais) ? "" : "none";
+  }});
+}}
+</script>
+
+</body>
+</html>
+"""
+
+    caminho = os.path.join(PASTA_SAIDA, "index.html")
+    with open(caminho, "w", encoding="utf-8") as f:
+        f.write(html)
+
+    log.info("HTML atualizado com sucesso")
 
     publicar_github()
 
