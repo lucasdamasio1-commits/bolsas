@@ -1,505 +1,139 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Bolsas</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radar de Bolsas de Pesquisa</title>
 <style>
-body{font-family:Arial;max-width:1100px;margin:auto;padding:20px}
-table{width:100%;border-collapse:collapse}
-th{background:#1F3864;color:white}
-td,th{padding:8px;border:1px solid #ddd}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f4f6fb;color:#222;padding:20px}
+header{background:#1F3864;color:#fff;border-radius:8px;padding:18px 24px;margin-bottom:20px}
+header h1{font-size:20px;font-weight:700}
+header p{font-size:13px;opacity:.8;margin-top:4px}
+.filtros{display:flex;flex-wrap:wrap;gap:10px;background:#fff;border:1px solid #dde3f0;border-radius:8px;padding:14px 18px;margin-bottom:14px}
+.filtros label{font-size:12px;color:#555;margin-bottom:3px;display:block}
+.filtros input,.filtros select{padding:7px 10px;border:1px solid #ccd3e0;border-radius:6px;font-size:13px;background:#fff;color:#222}
+.filtros input{min-width:220px}
+.resumo{font-size:13px;color:#555;margin-bottom:10px}
+.resumo strong{color:#1F3864}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;font-size:13px}
+th{background:#1F3864;color:#fff;padding:10px 12px;text-align:left;white-space:nowrap}
+td{padding:8px 12px;border-bottom:1px solid #eef0f5;vertical-align:top;max-width:380px;word-break:break-word}
+tr.par td{background:#f7f9ff}
+tr.ativo-row td{background:#eafaf1}
+tr:hover td{background:#e8edf8!important}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700}
+.b-sim{background:#d4edda;color:#155724}
+.b-nao{background:#f0f0f0;color:#666}
+.b-sc{background:#e8edf8;color:#1F3864}
+a{color:#1F3864;font-weight:600;text-decoration:none}
+a:hover{text-decoration:underline}
+.vazio{text-align:center;padding:40px 0;color:#888}
+@media(max-width:600px){td,th{font-size:12px;padding:6px 8px}}
 </style>
-
 </head>
 <body>
+<header>
+  <h1>Radar de Bolsas de Pesquisa</h1>
+  <p>Atualizado em 02/05/2026 &nbsp;|&nbsp; Coleta automática diária</p>
+</header>
 
-<h1>Bolsas de Pesquisa</h1>
-<p>Atualizado em 2026-05-02</p>
+<div class="filtros">
+  <div>
+    <label>Buscar no título</label>
+    <input id="busca" type="text" placeholder="Ex: doutorado, grant, AI...">
+  </div>
+  <div>
+    <label>Fonte</label>
+    <select id="f-fonte"><option value="">Todas</option><option value="CAPES">CAPES</option><option value="CNPq">CNPq</option><option value="CORDIS EU">CORDIS EU</option><option value="Fulbright">Fulbright</option><option value="MSCA">MSCA</option><option value="UKRI">UKRI</option><option value="UKRI RSS">UKRI RSS</option></select>
+  </div>
+  <div>
+    <label>País</label>
+    <select id="f-pais"><option value="">Todos</option><option value="Brasil">Brasil</option><option value="EUA">EUA</option><option value="Europa">Europa</option><option value="Reino Unido">Reino Unido</option></select>
+  </div>
+  <div>
+    <label>Nível</label>
+    <select id="f-nivel"><option value="">Todos</option><option value="Doutorado">Doutorado</option><option value="Geral">Geral</option><option value="Pós-doc">Pós-doc</option></select>
+  </div>
+  <div>
+    <label>Status</label>
+    <select id="f-ativo">
+      <option value="">Todos</option>
+      <option value="Sim">Ativos</option>
+      <option value="Nao">Outros</option>
+    </select>
+  </div>
+</div>
 
-<input type="text" id="busca" placeholder="Buscar..." onkeyup="filtrar()">
+<p class="resumo">Mostrando <strong id="cnt">0</strong> bolsas</p>
 
-<table id="tabela">
-<thead>
-<tr>
-<th>Título</th><th>Fonte</th><th>País</th>
-<th>Nível</th><th>Prazo</th><th>Link</th>
-</tr>
-</thead>
-
-<tbody>
-
-        <tr>
-          <td>Bolsas e Auxílios</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Bolsas no País e no Exterior</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/copy_of_modalidades" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Auxílios</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/auxilios-1" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Cartão Pesquisa</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/auxilios-cartao-pesquisa" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Pesquisa em Pauta</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/assuntos/noticias/pesquisa-do-dia" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Relatório de Pesquisa</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/assuntos/popularizacao-da-ciencia/relatorios-de-pesquisa" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Sisgen Pesquisa</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://sisgen-pesquisa.cnpq.br" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Serviços para Imigrantes</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/pt-br/temas/servicos-para-imigrantes" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Educação e Pesquisa</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/pt-br/noticias/educacao-e-pesquisa" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Bolsas no País e no Exterior</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/copy_of_modalidades" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Auxílios</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/auxilios-1" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Cartão Pesquisa</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/auxilios-cartao-pesquisa" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Painel de Bolsas e Projetos VigentesFornece uma fotografia do fomento atual do CNPq. Além do número total de projetos ou de bolsas vigentes em cada uma das 13 dimensões disponibilizadas.</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/mapa-de-fomento-em-ciencia-tecnologia-e-inovacao" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Bolsas e Auxílios</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Bolsas no País e no Exterior</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/copy_of_modalidades" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Auxílios</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/auxilios-1" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Cartão Pesquisa</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/auxilios-cartao-pesquisa" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Pesquisa em Pauta</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/assuntos/noticias/pesquisa-do-dia" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Relatório de Pesquisa</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/cnpq/pt-br/assuntos/popularizacao-da-ciencia/relatorios-de-pesquisa" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Sisgen Pesquisa</td>
-          <td>CNPq</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://sisgen-pesquisa.cnpq.br" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Prêmio CAPES/Fundação Grupo Volkswagen de Excelência em Pesquisa em Mobilidade Urbana Sustentável</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/assuntos/premios/premio-capes-fundacao-grupo-volkswagen-de-excelencia-em-pesquisa-em-mobilidade-urbana-sustentavel" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Prêmio CAPES - Natura Campus de Excelência em Pesquisa</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/assuntos/premios/premio-capes-natura" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Seminário Estruturas em Aço, Ensino e Pesquisa Científica e Tecnológica.</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/assuntos/eventos/seminario-estruturas-em-aco-ensino-e-pesquisa-cientifica-e-tecnologica" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Bolsas e Estudantes</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Edital seleção</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/servidores/edital-selecao" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Bolsas e Auxílios Internacionais</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/perguntas-frequentes/bolsas-e-auxilios-internacionais" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Programas e Bolsas no País</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/perguntas-frequentes/programas-e-bolsas-no-pais" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Pesquisa Pública</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://sei.capes.gov.br/sei/modulos/pesquisa/md_pesq_processo_pesquisar.php?acao_externa=protocolo_pesquisar&acao_origem_externa=protocolo_pesquisar&id_orgao_acesso_externo=1" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Auxílio Financeiro a Projeto Educacional ou de Pesquisa e Pós-Graduação - AUXPE</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pós-doc</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/prestacao-de-contas-e-cobranca-administrativa/auxilio-financeiro-a-projeto-educacional-ou-de-pesquisa-e-pos-graduacao-auxpe" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Manual Cartão Pesquisador</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/centrais-de-conteudo/documentos/09042024_manual-cartao-pesquisador-capes-2024-v04.pdf" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Termo Uso e Politica de Privacidade App Pesquisador</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados-pessoais/termo-uso-e-politica-de-privacidade-app-pesquisador" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Serviços para Imigrantes</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/pt-br/temas/servicos-para-imigrantes" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Educação e Pesquisa</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/pt-br/noticias/educacao-e-pesquisa" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Bolsas e Auxílios Internacionais</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas/bolsas-e-auxilios-internacionais/" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Valores de Bolsas</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas/prestacao-de-contas/valores-de-bolsas" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Prêmio CAPES/Fundação Grupo Volkswagen de Excelência em Pesquisa em Mobilidade Urbana Sustentável</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/assuntos/premios/premio-capes-fundacao-grupo-volkswagen-de-excelencia-em-pesquisa-em-mobilidade-urbana-sustentavel" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Prêmio CAPES - Natura Campus de Excelência em Pesquisa</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/assuntos/premios/premio-capes-natura" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Seminário Estruturas em Aço, Ensino e Pesquisa Científica e Tecnológica.</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/assuntos/eventos/seminario-estruturas-em-aco-ensino-e-pesquisa-cientifica-e-tecnologica" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Bolsas e Estudantes</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Edital seleção</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/servidores/edital-selecao" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Bolsas e Auxílios Internacionais</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/perguntas-frequentes/bolsas-e-auxilios-internacionais" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Programas e Bolsas no País</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/perguntas-frequentes/programas-e-bolsas-no-pais" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Pesquisa Pública</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://sei.capes.gov.br/sei/modulos/pesquisa/md_pesq_processo_pesquisar.php?acao_externa=protocolo_pesquisar&acao_origem_externa=protocolo_pesquisar&id_orgao_acesso_externo=1" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Auxílio Financeiro a Projeto Educacional ou de Pesquisa e Pós-Graduação - AUXPE</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pós-doc</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/prestacao-de-contas-e-cobranca-administrativa/auxilio-financeiro-a-projeto-educacional-ou-de-pesquisa-e-pos-graduacao-auxpe" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Manual Cartão Pesquisador</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/centrais-de-conteudo/documentos/09042024_manual-cartao-pesquisador-capes-2024-v04.pdf" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Termo Uso e Politica de Privacidade App Pesquisador</td>
-          <td>CAPES</td>
-          <td>Brasil</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados-pessoais/termo-uso-e-politica-de-privacidade-app-pesquisador" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Bolsas</td>
-          <td>Fulbright</td>
-          <td>Internacional</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://fulbright.org.br/bolsas//bolsas-para-brasileiros" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Fulbright dobra número de bolsas de doutorado sanduíche nos EUA e reajusta valores em até 120%</td>
-          <td>Fulbright</td>
-          <td>Internacional</td>
-          <td>Doutorado</td>
-          <td>Consultar edital</td>
-          <td><a href="https://fulbright.org.br/noticias/fulbright-dobra-numero-de-bolsas-de-doutorado-sanduiche-nos-eua/" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>other selected funding organisations</td>
-          <td>DAAD</td>
-          <td>Alemanha</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.daad.de/en/study-and-research-in-germany/scholarships/scholarship-database/information-on-other-funding-organisations/" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>important scholarship information</td>
-          <td>DAAD</td>
-          <td>Alemanha</td>
-          <td>Pesquisa / Geral</td>
-          <td>Consultar edital</td>
-          <td><a href="https://www.daad.de/en/study-and-research-in-germany/scholarships/important-information-for-scholarship-applicants/" target="_blank">Abrir</a></td>
-        </tr>
-        
-        <tr>
-          <td>Horizon Europe – Funding & Tenders Portal</td>
-          <td>Horizon Europe</td>
-          <td>Europa</td>
-          <td>Doutorado/Pós-doc</td>
-          <td>Variável</td>
-          <td><a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/" target="_blank">Abrir</a></td>
-        </tr>
-        
-</tbody>
+<table>
+  <thead>
+    <tr>
+      <th>Título</th><th>Fonte</th><th>País</th><th>Nível</th>
+      <th>Prazo</th><th>Score</th><th>Ativo</th><th>Link</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
 </table>
 
 <script>
-function filtrar(){
-  let input = document.getElementById("busca").value.toLowerCase();
-  document.querySelectorAll("#tabela tbody tr").forEach(tr => {
-    tr.style.display = tr.innerText.toLowerCase().includes(input) ? "" : "none";
-  });
-}
-</script>
+var DADOS = [{"titulo": "Postdoctoral Fellowships", "fonte": "MSCA", "pais": "Europa", "nivel": "Pós-doc", "prazo": "Consultar edital", "link": "https://marie-sklodowska-curie-actions.ec.europa.eu/actions/postdoctoral-fellowships", "data": "2026-05-02", "score": 3, "ativo": ""}, {"titulo": "Painéis de Dados", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/acesso-a-informacao/dados-abertos/paineis-de-dados", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Procedimentos e Processos Correcionais", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/acesso-a-informacao/corregedoria/procedimentos-e-processos-correcionais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel de Corregedorias da Corregedoria Geral da União (CRG)", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://centralpaineis.cgu.gov.br/visualizar/corregedorias", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel dos Comitês Assessores", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://app.powerbi.com/view?r=eyJrIjoiOTYyMGFlMWItOWRmNS00ZTZkLWI2ZGItMmM4YWNhZjQ4YWQxIiwidCI6IjkyYzBjZmE5LTdlOTEtNGVhZC1hYzI5LWNkNDRhMjM4OWIwMSJ9", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Guias e Tutoriais", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/assuntos/comites-assessoramento/guias-e-tutoriais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Canais de Atendimento", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/canais_atendimento", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Centrais de Conteúdo", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/centrais-de-conteudo", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Diretoria de Análise de Resultados e Soluções Digitais - DASD", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/composicao/diretoria-executiva-1/copy_of_diretoria-de-gestao-e-tecnologia-da-informacao-dgti", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel dos Comitês Assessores", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://app.powerbi.com/view?r=eyJrIjoiOTYyMGFlMWItOWRmNS00ZTZkLWI2ZGItMmM4YWNhZjQ4YWQxIiwidCI6IjkyYzBjZmE5LTdlOTEtNGVhZC1hYzI5LWNkNDRhMjM4OWIwMSJ9", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Demais segmentos (ONGs, organizações sociais, etc)", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/pt-br/servicos/listar_servicos_segmento?segmento=publico_alvo_outros", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Proteção de Dados Pessoais", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/pt-br/temas/protecao-de-dados-pessoais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Serviços para Imigrantes", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/pt-br/temas/servicos-para-imigrantes", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Política e Orçamento Educacionais", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/pt-br/temas/politica-e-orcamento-educacional", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Canais do Executivo Federal", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/pt-br/canais-do-executivo-federal", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel Estatístico de Pessoal", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/gestao/pt-br/acesso-a-informacao/servidores/servidores-publicos/painel-estatistico-de-pessoal", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel de Compras do Governo Federal", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "http://paineldecompras.economia.gov.br", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "ImóveisNovoConsultar dados e baixar documentos de imóveis rurais na plataforma Meu Imóvel Rural", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/pt-br/servicos/consultar-dados-de-imoveis-rurais-na-plataforma-meu-imovel-rural?origem=destaque_inst", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Saiba mais sobre Chamada de Apoio a Eventos de Promoção do Empreendedorismo e da Inovação: 1ª rodada tem inscrições a...", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/assuntos/noticias/cnpq-em-acao/chamada-de-apoio-a-eventos-de-promocao-do-empreendedorismo-e-da-inovacao-esta-com-inscricoes-abertas-ate-28-05", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Saiba mais sobre CNPq apoia projetos sobre métodos alternativos à experimentação animal em pesquisas; inscrições até ...", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/assuntos/noticias/cnpq-em-acao/chamada-renama-nams-cnpq-publica-edital", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Saiba mais sobre 75 anos do CNPq: autoridades destacam papel ativo do Conselho na consolidação e expansão da ciência ...", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/assuntos/noticias/cnpq-em-acao/75-anos-de-cnpq-solenidade-reune-autoridades-colaboradores-e-pesquisadores-para-comemorar-data", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Saiba mais sobre Novo PCI: chamada investirá R$ 120 milhões em pesquisas de unidades vinculadas ao MCTI; inscrições a...", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/assuntos/noticias/cnpq-em-acao/cnpq-publicou-edital-do-novo-programa-de-capacitacao-institucional", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Saiba mais sobre Com carreira dedicada à Amazônia, bióloga Maria Teresa Fernandez Piedade vence Prêmio Almirante Álva...", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/assuntos/noticias/premios/pesquisadora-maria-teresa-fernandez-piedade-e-a-contemplada-com-o-premio-almirante-alvaro-alberto-2013-edicao-2026-1", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Saiba mais sobre Prêmio Jovem Cientista 2026: inscrições abertas até 31 de julho", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/assuntos/noticias/premios/premio-jovem-cientista-2026-inscricoes-estao-abertas-ate-31-de-julho", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Saiba mais sobre Parceria Embrapa-CNPq investe R$ 50 milhões em capacitação agrícola para países africanos", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/assuntos/noticias/cnpq-em-acao/parceria-embrapa-cnpq-investe-r-50-milhoes-em-capacitacao-agricola-para-paises-africanos", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Saiba mais sobre Chamada Pepe Mujica: prazo de submissões prorrogado até 18/05; confira alterações no edital", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/assuntos/noticias/cnpq-em-acao/chamada-pepe-mujiga-prazo-de-submissoes-prorrogado-ate-18-05-confira-alteracoes-no-edital", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Saiba mais sobre CNPq celebra 75 anos com solenidade e anúncio de novas ações", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/assuntos/noticias/cnpq-em-acao/cnpq-celebra-75-anos-com-solenidade-e-anuncio-de-novas-acoes", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Saiba mais sobre 75 anos do CNPq: Conselho está presente em todas as fases da vida do pesquisador", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/assuntos/noticias/cnpq-em-acao/75-anos-do-cnpq-conselho-esta-presente-em-todas-as-fases-da-vida-do-pesquisador", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Saiba mais sobre CNPq lança site e videocast de entrevistas para celebrar os 20 anos do Programa Mulheres e Ciência", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/assuntos/noticias/cnpq-em-acao/cnpq-lanca-site-e-videocast-de-entrevistas-para-celebrar-os-20-anos-do-programa-mulheres-e-ciencia", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "SciDev.Net e EurekAlert! promovem workshop sobre divulgação científica para comunicadores institucionais e assessores...", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/assuntos/noticias/oportunidades-externas/curso-on-line-gratuito-focara-divulgacao-cientifica-para-institucionais-e-assessores-de-imprensa", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel de Fomento em Ciência, Tecnologia e InovaçãoÉ uma plataforma de apresentação de dados do fomento do CNPq à pes...", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "http://bi.cnpq.br/painel/v2/p-fomento-cti.html", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel de Chamadas de Bolsas de Produtividade - PQOs números e gráficos exibidos neste painel refletem as propostas s...", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/acesso-a-informacao/dados-abertos/paineis-de-dados/painel-de-chamadas-de-bolsas-de-produtividade-pq", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel de Adicional de BancadaDetalha o pagamento mensal aos bolsistas para custeio de atividades de pesquisa científ...", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "http://bi.cnpq.br/painel/v2/p-adicional-de-bancada.html", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel de Bolsas e Projetos VigentesFornece uma fotografia do fomento atual do CNPq. Além do número total de projetos...", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/mapa-de-fomento-em-ciencia-tecnologia-e-inovacao", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel de Demanda e AtendimentoOs dados disponibilizados pelo Painel são fundamentais para a análise sobre a dimensão...", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/acesso-a-informacao/dados-abertos/paineis-de-dados/painel-de-demanda-e-atendimento", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel LattesO Painel Lattes reúne dados extraídos dos currículos dos quase um milhão de mestres e doutores, cadastra...", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/acesso-a-informacao/dados-abertos/paineis-de-dados/painel-lattes", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Saiba mais sobre os Painéis de Dados", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/acesso-a-informacao/dados-abertos/gestao-transparente-dos-dados-da-ciencia-brasileira", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painéis de Dados", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/acesso-a-informacao/dados-abertos/paineis-de-dados", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Procedimentos e Processos Correcionais", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/acesso-a-informacao/corregedoria/procedimentos-e-processos-correcionais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel de Corregedorias da Corregedoria Geral da União (CRG)", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://centralpaineis.cgu.gov.br/visualizar/corregedorias", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel dos Comitês Assessores", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://app.powerbi.com/view?r=eyJrIjoiOTYyMGFlMWItOWRmNS00ZTZkLWI2ZGItMmM4YWNhZjQ4YWQxIiwidCI6IjkyYzBjZmE5LTdlOTEtNGVhZC1hYzI5LWNkNDRhMjM4OWIwMSJ9", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Guias e Tutoriais", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/assuntos/comites-assessoramento/guias-e-tutoriais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Canais de Atendimento", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/canais_atendimento", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Centrais de Conteúdo", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/centrais-de-conteudo", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Diretoria de Análise de Resultados e Soluções Digitais - DASD", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/cnpq/pt-br/composicao/diretoria-executiva-1/copy_of_diretoria-de-gestao-e-tecnologia-da-informacao-dgti", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel dos Comitês Assessores", "fonte": "CNPq", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://app.powerbi.com/view?r=eyJrIjoiOTYyMGFlMWItOWRmNS00ZTZkLWI2ZGItMmM4YWNhZjQ4YWQxIiwidCI6IjkyYzBjZmE5LTdlOTEtNGVhZC1hYzI5LWNkNDRhMjM4OWIwMSJ9", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Editais e resultados CAPES", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/assuntos/editais-e-resultados-capes", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "III Colóquio Saint Hilaire", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/assuntos/eventos/iii-coloquio-saint-hilaire", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Produtos Digitais CAPES", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/assuntos/aplicativos-capes", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel de Monitoramento e Indicadores", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/assuntos/painel-de-monitoramento-e-indicadores", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Orçamento - Evolução em reais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/institucional/orcamento-evolucao-em-reais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Plano Anual de Atividades de Auditoria Interna (PAINT)", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/auditorias/paint", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Relatório Anual de Atividades de Auditoria Interna (RAINT)", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/auditorias/raint", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Normas e Manuais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/auditorias/normas-e-manuais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Relatórios Anuais da Autoridade de Monitoramento da LAI", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/servico-de-informacao-ao-cidadao-sic/relatorios-anuais-da-autoridade-de-monitoramento-da-lai", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Editais de chamamento público", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/servico-de-informacao-ao-cidadao-sic/editais-de-chamamento-publico", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel LAI", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/acessoainformacao/pt-br/perguntas-frequentes/painel-lei-de-acesso-a-informacao", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Canais Específicos", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/servico-de-informacao-ao-cidadao-sic/canais-especificos", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Bolsas e Auxílios Internacionais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/perguntas-frequentes/bolsas-e-auxilios-internacionais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Estrutura Organizacional, cargos e contatos institucionais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/transparencia-e-prestacao-de-contas/estrutura-organizacional-cargos-e-contatos-institucionais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Privacidade e Proteção de Dados Pessoais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados-pessoais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Encarregado pelo Tratamento de Dados Pessoais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados-pessoais/encarregado-pelo-tratamento-de-dados-pessoais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Canais de Comunicação", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados-pessoais/canais-de-comunicacao", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Política de Privacidade e Proteção de Dados Pessoais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados-pessoais/politica-de-privacidade-e-protecao-de-dados-pessoais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Compartilhamento de Dados Pessoais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados-pessoais/compartilhamento-de-dados-pessoais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Centrais de Conteúdo", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/centrais-de-conteudo", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Redes Sociais da CAPES", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/centrais-de-conteudo/redes-sociais-da-capes", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Produtos digitais da CAPES", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/centrais-de-conteudo/produtos-digitais-da-capes", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Centrais de Atendimento", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/canais_atendimento", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Demais segmentos (ONGs, organizações sociais, etc)", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/pt-br/servicos/listar_servicos_segmento?segmento=publico_alvo_outros", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Proteção de Dados Pessoais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/pt-br/temas/protecao-de-dados-pessoais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Serviços para Imigrantes", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/pt-br/temas/servicos-para-imigrantes", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Política e Orçamento Educacionais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/pt-br/temas/politica-e-orcamento-educacional", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Canais do Executivo Federal", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/pt-br/canais-do-executivo-federal", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel Estatístico de Pessoal", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/gestao/pt-br/acesso-a-informacao/servidores/servidores-publicos/painel-estatistico-de-pessoal", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel de Compras do Governo Federal", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "http://paineldecompras.economia.gov.br", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "ImóveisNovoConsultar dados e baixar documentos de imóveis rurais na plataforma Meu Imóvel Rural", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/pt-br/servicos/consultar-dados-de-imoveis-rurais-na-plataforma-meu-imovel-rural?origem=destaque_inst", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Mais notícias", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/assuntos/noticias", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "MAIS REGISTROS", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/registros", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Programas Institucionais no País", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas/bolsas-no-pais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Bolsas e Auxílios Internacionais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas/bolsas-e-auxilios-internacionais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Centrais de Atendimento", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/canais_atendimento", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Mais informações", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Editais e resultados CAPES", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/assuntos/editais-e-resultados-capes", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "III Colóquio Saint Hilaire", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/assuntos/eventos/iii-coloquio-saint-hilaire", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Produtos Digitais CAPES", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/assuntos/aplicativos-capes", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel de Monitoramento e Indicadores", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/assuntos/painel-de-monitoramento-e-indicadores", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Orçamento - Evolução em reais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/institucional/orcamento-evolucao-em-reais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Plano Anual de Atividades de Auditoria Interna (PAINT)", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/auditorias/paint", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Relatório Anual de Atividades de Auditoria Interna (RAINT)", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/auditorias/raint", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Normas e Manuais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/auditorias/normas-e-manuais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Relatórios Anuais da Autoridade de Monitoramento da LAI", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/servico-de-informacao-ao-cidadao-sic/relatorios-anuais-da-autoridade-de-monitoramento-da-lai", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Editais de chamamento público", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/servico-de-informacao-ao-cidadao-sic/editais-de-chamamento-publico", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Painel LAI", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/acessoainformacao/pt-br/perguntas-frequentes/painel-lei-de-acesso-a-informacao", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Canais Específicos", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/servico-de-informacao-ao-cidadao-sic/canais-especificos", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Bolsas e Auxílios Internacionais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/perguntas-frequentes/bolsas-e-auxilios-internacionais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Estrutura Organizacional, cargos e contatos institucionais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/transparencia-e-prestacao-de-contas/estrutura-organizacional-cargos-e-contatos-institucionais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Privacidade e Proteção de Dados Pessoais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados-pessoais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Encarregado pelo Tratamento de Dados Pessoais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados-pessoais/encarregado-pelo-tratamento-de-dados-pessoais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Canais de Comunicação", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados-pessoais/canais-de-comunicacao", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Política de Privacidade e Proteção de Dados Pessoais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados-pessoais/politica-de-privacidade-e-protecao-de-dados-pessoais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Compartilhamento de Dados Pessoais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados-pessoais/compartilhamento-de-dados-pessoais", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Centrais de Conteúdo", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/centrais-de-conteudo", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Redes Sociais da CAPES", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/centrais-de-conteudo/redes-sociais-da-capes", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Produtos digitais da CAPES", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/centrais-de-conteudo/produtos-digitais-da-capes", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Centrais de Atendimento", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/canais_atendimento", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Career Fair", "fonte": "Fulbright", "pais": "EUA", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://fulbright.org/2019-career-fair/", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Travel Grants", "fonte": "Fulbright", "pais": "EUA", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://fulbright.org/2018-conference-travel-grants/", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Career Fair", "fonte": "Fulbright", "pais": "EUA", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://fulbright.org/2019-career-fair/", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Travel Grants", "fonte": "Fulbright", "pais": "EUA", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://fulbright.org/2018-conference-travel-grants/", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "frfrançais", "fonte": "CORDIS EU", "pais": "Europa", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://cordis.europa.eu/fr", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Research and Innovation community platform of the European Commission", "fonte": "CORDIS EU", "pais": "Europa", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://research-and-innovation.ec.europa.eu/index_en", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "NewsTrending SciencePut the burger and fries down – it’s not just your waistline that will thank you30 April 2026", "fonte": "CORDIS EU", "pais": "Europa", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://cordis.europa.eu/article/id/465164-put-the-burger-and-fries-down-it-s-not-just-your-waistline-that-will-thank-you", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "EU Research and Innovation data at your fingertips(opens in new window)", "fonte": "CORDIS EU", "pais": "Europa", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/horizon-dashboard", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Semi-Automatic Project Classification - Explainability Notice", "fonte": "CORDIS EU", "pais": "Europa", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://cordis.europa.eu/about/explainability", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Research and innovation(opens in new window)", "fonte": "CORDIS EU", "pais": "Europa", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://research-and-innovation.ec.europa.eu", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Apply for funding", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/apply-for-funding/", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Apply for funding", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/apply-for-funding/", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Funding finder", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/opportunity/", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Improving your funding experience", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/apply-for-funding/improving-your-funding-experience/", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Getting your funding", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/manage-your-award/getting-your-funding/", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "About UK Research and Innovation", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/who-we-are/about-uk-research-and-innovation/", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "BBSRC standard research grant: applicant-led mode", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/opportunity/bbsrc-standard-research-grant-applicant-led-mode/", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Contracts for Innovation: Cyber scale in critical sectors", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/opportunity/contracts-for-innovation-cyber-scale-in-critical-sectors/", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "ADOPT Facilitator Support Grant: round 8", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/opportunity/adopt-facilitator-support-grant-round-8/", "data": "2026-05-02", "score": 2, "ativo": ""}, {"titulo": "Postdoctoral Fellowships", "fonte": "MSCA", "pais": "Europa", "nivel": "Doutorado", "prazo": "Consultar edital", "link": "https://marie-sklodowska-curie-actions.ec.europa.eu/actions/postdoctoral-fellowships", "data": "2026-05-02", "score": 7, "ativo": "Nao"}, {"titulo": "Bolsas e Estudantes", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas", "data": "2026-05-02", "score": 3, "ativo": "Nao"}, {"titulo": "Bolsas e Auxílios Internacionais", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/perguntas-frequentes/bolsas-e-auxilios-internacionais", "data": "2026-05-02", "score": 3, "ativo": "Nao"}, {"titulo": "Programas e Bolsas no País", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/perguntas-frequentes/programas-e-bolsas-no-pais", "data": "2026-05-02", "score": 3, "ativo": "Nao"}, {"titulo": "Serviços para Imigrantes", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/pt-br/temas/servicos-para-imigrantes", "data": "2026-05-02", "score": 3, "ativo": "Nao"}, {"titulo": "Valores de Bolsas", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas/prestacao-de-contas/valores-de-bolsas", "data": "2026-05-02", "score": 3, "ativo": "Nao"}, {"titulo": "Apply for funding", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/apply-for-funding/", "data": "2026-05-02", "score": 3, "ativo": "Nao"}, {"titulo": "Funding finder", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/opportunity/", "data": "2026-05-02", "score": 3, "ativo": "Nao"}, {"titulo": "Improving your funding experience", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/apply-for-funding/improving-your-funding-experience/", "data": "2026-05-02", "score": 3, "ativo": "Nao"}, {"titulo": "Getting your funding", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/manage-your-award/getting-your-funding/", "data": "2026-05-02", "score": 3, "ativo": "Nao"}, {"titulo": "BBSRC standard research grant: applicant-led mode", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/opportunity/bbsrc-standard-research-grant-applicant-led-mode/", "data": "2026-05-02", "score": 3, "ativo": "Nao"}, {"titulo": "ADOPT Facilitator Support Grant: round 8", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/opportunity/adopt-facilitator-support-grant-round-8/", "data": "2026-05-02", "score": 3, "ativo": "Nao"}, {"titulo": "BBSRC standard research grant: applicant-led mode", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Fri, 01 Ma", "link": "https://www.ukri.org/opportunity/bbsrc-standard-research-grant-applicant-led-mode/", "data": "2026-05-02", "score": 3, "ativo": "Nao"}, {"titulo": "ADOPT Facilitator Support Grant: round 8", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Thu, 23 Ap", "link": "https://www.ukri.org/opportunity/adopt-facilitator-support-grant-round-8/", "data": "2026-05-02", "score": 3, "ativo": "Nao"}, {"titulo": "Full ADOPT grant: round seven", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Tue, 14 Ap", "link": "https://www.ukri.org/opportunity/full-adopt-grant-round-seven/", "data": "2026-05-02", "score": 3, "ativo": "Nao"}, {"titulo": "Doctoral Networks", "fonte": "MSCA", "pais": "Europa", "nivel": "Doutorado", "prazo": "Consultar edital", "link": "https://marie-sklodowska-curie-actions.ec.europa.eu/actions/doctoral-networks", "data": "2026-05-02", "score": 2, "ativo": "Nao"}, {"titulo": "About UK Research and Innovation", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/who-we-are/about-uk-research-and-innovation/", "data": "2026-05-02", "score": 2, "ativo": "Nao"}, {"titulo": "Contracts for Innovation: Cyber scale in critical sectors", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/opportunity/contracts-for-innovation-cyber-scale-in-critical-sectors/", "data": "2026-05-02", "score": 2, "ativo": "Nao"}, {"titulo": "Contracts for Innovation: Cyber scale in critical sectors", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Wed, 29 Ap", "link": "https://www.ukri.org/opportunity/contracts-for-innovation-cyber-scale-in-critical-sectors/", "data": "2026-05-02", "score": 2, "ativo": "Nao"}, {"titulo": "Advanced manufacturing supply chain innovation: CRD", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Tue, 21 Ap", "link": "https://www.ukri.org/opportunity/advanced-manufacturing-supply-chain-innovation-crd/", "data": "2026-05-02", "score": 2, "ativo": "Nao"}, {"titulo": "Battery innovation concept development round 2", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Mon, 20 Ap", "link": "https://www.ukri.org/opportunity/battery-innovation-concept-development-round-2/", "data": "2026-05-02", "score": 2, "ativo": "Nao"}, {"titulo": "Contracts for Innovation: enabling commercial quantum networking", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Thu, 16 Ap", "link": "https://www.ukri.org/opportunity/contracts-for-innovation-enabling-commercial-quantum-networking/", "data": "2026-05-02", "score": 2, "ativo": "Nao"}, {"titulo": "Doctoral focal award: environmental evidence synthesis", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Doutorado", "prazo": "Tue, 14 Ap", "link": "https://www.ukri.org/opportunity/doctoral-focal-award-environmental-evidence-synthesis/", "data": "2026-05-02", "score": 2, "ativo": "Nao"}, {"titulo": "Frontier artificial intelligence discovery", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Thu, 09 Ap", "link": "https://www.ukri.org/opportunity/frontier-artificial-intelligence-discovery/", "data": "2026-05-02", "score": 2, "ativo": "Nao"}, {"titulo": "Prêmio CAPES/Fundação Grupo Volkswagen de Excelência em Pesquisa em Mobilidade Urbana Sustentável", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/assuntos/premios/premio-capes-fundacao-grupo-volkswagen-de-excelencia-em-pesquisa-em-mobilidade-urbana-sustentavel", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Prêmio CAPES - Natura Campus de Excelência em Pesquisa", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/assuntos/premios/premio-capes-natura", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Prêmio Top User Award/CAPES 2014", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/assuntos/premios/premio-capes-proquest", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "I Encontro de Coordenadores do Programa Novos Talentos", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/assuntos/eventos/i-encontro-de-coordenadores-do-programa-novos-talentos", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "I Seminário Nacional do Programa de Consolidação das Licenciaturas (Prodocência)", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/assuntos/eventos/i-seminario-nacional-do-prodocencia", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Seminário Estruturas em Aço, Ensino e Pesquisa Científica e Tecnológica.", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/assuntos/eventos/seminario-estruturas-em-aco-ensino-e-pesquisa-cientifica-e-tecnologica", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Ações e Programas", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Chamadas públicas", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/licitacoes-e-contratos/chamadas-publicas", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Edital seleção", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/servidores/edital-selecao", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Pesquisa Pública", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://sei.capes.gov.br/sei/modulos/pesquisa/md_pesq_processo_pesquisar.php?acao_externa=protocolo_pesquisar&acao_origem_externa=protocolo_pesquisar&id_orgao_acesso_externo=1", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Programas, Projetos e Ações", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/transparencia-e-prestacao-de-contas/programas-projetos-e-acoes", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Auxílio Financeiro a Projeto Educacional ou de Pesquisa e Pós-Graduação - AUXPE", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/prestacao-de-contas-e-cobranca-administrativa/auxilio-financeiro-a-projeto-educacional-ou-de-pesquisa-e-pos-graduacao-auxpe", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Manual Cartão Pesquisador", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/centrais-de-conteudo/documentos/09042024_manual-cartao-pesquisador-capes-2024-v04.pdf", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Programas, Projetos, Ações, Obras e Atividades", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/transparencia-e-prestacao-de-contas/programas-projetos-e-acoes", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Educação e Pesquisa", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/pt-br/noticias/educacao-e-pesquisa", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Programas Institucionais no País", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas/bolsas-no-pais", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Programas Estratégicos", "fonte": "CAPES", "pais": "Brasil", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas/programas-estrategicos", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "European Research Executive Agency (REA)", "fonte": "MSCA", "pais": "Europa", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://rea.ec.europa.eu/funding-and-grants/horizon-europe-marie-sklodowska-curie-actions_en", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Manage your award", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/manage-your-award/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Develop your application", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/apply-for-funding/develop-your-application/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Research culture", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/what-we-do/supporting-healthy-research-and-innovation-culture/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Our strategy", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/who-we-are/our-vision-and-strategy/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Research England", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/councils/research-england/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Biotechnology and Biological Sciences Research Council (BBSRC)", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/councils/bbsrc/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "BBSRC new investigator award: applicant-led mode", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/opportunity/bbsrc-new-investigator-award-applicant-led-mode/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Natural Environment Research Council (NERC)", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/councils/nerc/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Medical Research Council (MRC)", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/councils/mrc/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "UKRI metascience scientometrics for research assessment (invite only)", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/opportunity/ukri-metascience-scientometrics-for-research-assessment-invite-only/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Economic and Social Research Council (ESRC)", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/councils/esrc/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Arts and Humanities Research Council (AHRC)", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/councils/ahrc/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Engineering and Physical Sciences Research Council (EPSRC)", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.ukri.org/councils/epsrc/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "UKRI for researchers YouTube", "fonte": "UKRI", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Consultar edital", "link": "https://www.youtube.com/@ukriforresearchers", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "BBSRC new investigator award: applicant-led mode", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Fri, 01 Ma", "link": "https://www.ukri.org/opportunity/bbsrc-new-investigator-award-applicant-led-mode/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Environmental sciences: Global Partnerships Seedcorn Fund 2026", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Thu, 30 Ap", "link": "https://www.ukri.org/opportunity/environmental-sciences-global-partnerships-seedcorn-fund-2026/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Experimental medicine stage one", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Thu, 30 Ap", "link": "https://www.ukri.org/opportunity/experimental-medicine/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "UKRI metascience scientometrics for research assessment (invite only)", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Tue, 28 Ap", "link": "https://www.ukri.org/opportunity/ukri-metascience-scientometrics-for-research-assessment-invite-only/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Video games and gambling-related harms", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Fri, 24 Ap", "link": "https://www.ukri.org/opportunity/video-games-and-gambling-related-harms/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "NHS fit for the future dementia challenge", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Wed, 22 Ap", "link": "https://www.ukri.org/opportunity/nhs-fit-for-the-future-dementia-challenge/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Innovate UK Venture Builder Pilot Expression of Interest", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Wed, 22 Ap", "link": "https://www.ukri.org/opportunity/innovate-uk-venture-builder-pilot-expression-of-interest/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Growth cohorts: next generation low carbon concrete cohort entry", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Mon, 20 Ap", "link": "https://www.ukri.org/opportunity/growth-cohorts-next-generation-low-carbon-concrete-cohort-entry/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Future offshore wind technologies: feasibility studies", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Fri, 17 Ap", "link": "https://www.ukri.org/opportunity/future-offshore-wind-technologies-feasibility-studies/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "2026 to 2027 strategic Longer and Larger (sLoLa) outlines", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Thu, 16 Ap", "link": "https://www.ukri.org/opportunity/2026-to-2027-strategic-longer-and-larger-slola-outlines/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}, {"titulo": "Frontier AI Benchmarking Datasets", "fonte": "UKRI RSS", "pais": "Reino Unido", "nivel": "Geral", "prazo": "Tue, 14 Ap", "link": "https://www.ukri.org/opportunity/frontier-ai-benchmarking-datasets/", "data": "2026-05-02", "score": 0, "ativo": "Nao"}];
 
+function esc(s){
+  return String(s||'')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function render(lista){
+  var tb = document.getElementById('tbody');
+  document.getElementById('cnt').textContent = lista.length;
+  if(!lista.length){
+    tb.innerHTML='<tr><td colspan="8" class="vazio">Nenhuma bolsa encontrada para os filtros selecionados.</td></tr>';
+    return;
+  }
+  tb.innerHTML = lista.map(function(b,i){
+    var cls = b.ativo==='Sim' ? 'ativo-row' : (i%2===0 ? 'par' : '');
+    var ab  = b.ativo==='Sim'
+      ? '<span class="badge b-sim">&#10004; Ativo</span>'
+      : '<span class="badge b-nao">—</span>';
+    return '<tr class="'+cls+'">'
+      +'<td>'+esc(b.titulo)+'</td>'
+      +'<td>'+esc(b.fonte)+'</td>'
+      +'<td>'+esc(b.pais)+'</td>'
+      +'<td>'+esc(b.nivel)+'</td>'
+      +'<td>'+esc(b.prazo)+'</td>'
+      +'<td><span class="badge b-sc">'+b.score+'</span></td>'
+      +'<td>'+ab+'</td>'
+      +'<td><a href="'+esc(b.link)+'" target="_blank" rel="noopener">Abrir &rarr;</a></td>'
+      +'</tr>';
+  }).join('');
+}
+
+function filtrar(){
+  var busca = document.getElementById('busca').value.toLowerCase();
+  var fonte = document.getElementById('f-fonte').value;
+  var pais  = document.getElementById('f-pais').value;
+  var nivel = document.getElementById('f-nivel').value;
+  var ativo = document.getElementById('f-ativo').value;
+  var r = DADOS.filter(function(b){
+    if(busca && b.titulo.toLowerCase().indexOf(busca)<0) return false;
+    if(fonte && b.fonte!==fonte) return false;
+    if(pais  && b.pais!==pais)  return false;
+    if(nivel && b.nivel!==nivel) return false;
+    if(ativo && b.ativo!==ativo) return false;
+    return true;
+  });
+  render(r);
+}
+
+['busca','f-fonte','f-pais','f-nivel','f-ativo'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', filtrar);
+  document.getElementById(id).addEventListener('change', filtrar);
+});
+
+render(DADOS);
+</script>
 </body>
 </html>
