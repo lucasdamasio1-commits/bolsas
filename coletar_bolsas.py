@@ -19,7 +19,9 @@ from datetime import datetime, date
 import os
 import logging
 import subprocess
+import re
 from datetime import date
+from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
@@ -132,6 +134,101 @@ def extrair_links_filtrados(url, fonte, pais):
 
 # ─── COLETA POR FONTE ──────────────────────────────────
 
+def coletar_euraxess_it_fr_es():
+    """
+    Busca contratos, financiamentos e oportunidades de hosting no EURAXESS
+    para Italia, Franca e Espanha, mantendo apenas resultados relacionados a
+    marketing, administracao/gestao e inteligencia artificial.
+    """
+    bolsas = []
+    url_base = "https://euraxess.ec.europa.eu/jobs/search"
+    paises = {"Italia": "781", "Franca": "793", "Espanha": "788"}
+    tipos = {
+        "job_offer": "Contrato / Vaga",
+        "funding": "Financiamento",
+        "hosting": "Hosting Offer",
+    }
+    termos = re.compile(
+        r"\b("
+        r"artificial intelligence|machine learning|deep learning|data science|"
+        r"big data|analytics|algorithm|algorithms|intelig[eê]ncia artificial|"
+        r"marketing|consumer|brand|branding|advertising|communication|"
+        r"management|business administration|administration|organizational|"
+        r"governance|leadership|strategy|innovation|entrepreneurship|"
+        r"gest[aã]o|administra[cç][aã]o|inova[cç][aã]o|empreendedorismo"
+        r")\b",
+        flags=re.I,
+    )
+    headers = {"User-Agent": "Mozilla/5.0"}
+    vistos = set()
+    sessao = requests.Session()
+    sessao.headers.update(headers)
+
+    def limpar_texto(elemento):
+        return re.sub(r"\s+", " ", elemento.get_text(" ", strip=True)).strip()
+
+    def extrair_prazo(texto):
+        m = re.search(r"Application Deadline:\s*(.*?)(?:\s+Work Locations:|$)", texto, flags=re.I)
+        return m.group(1).strip() if m else "Consultar edital"
+
+    def pagina_filtrada(id_pais, tipo):
+        inicial = sessao.get(url_base, timeout=20)
+        inicial.raise_for_status()
+        soup_inicial = BeautifulSoup(inicial.text, "html.parser")
+        form = soup_inicial.find("form", {"id": "oe-list-pages-facets-form"})
+        dados = {}
+        if form:
+            for inp in form.find_all("input"):
+                nome = inp.get("name")
+                if nome:
+                    dados[nome] = inp.get("value", "")
+        dados["job_country[]"] = id_pais
+        dados["offer_type[]"] = tipo
+        resposta = sessao.post(url_base, data=dados, timeout=20)
+        resposta.raise_for_status()
+        return BeautifulSoup(resposta.text, "html.parser")
+
+    for pais, id_pais in paises.items():
+        for tipo, rotulo_tipo in tipos.items():
+            try:
+                soup = pagina_filtrada(id_pais, tipo)
+            except Exception as e:
+                log.warning(f"EURAXESS {pais} erro: {e}")
+                continue
+
+            for item in soup.find_all("article"):
+                a = item.select_one('h3 a[href*="/jobs/"]')
+                if not a:
+                    continue
+
+                titulo = limpar_texto(a)
+                texto = limpar_texto(item)
+                termo = termos.search(f"{titulo} {texto}")
+                if not titulo or not termo:
+                    continue
+
+                link = urljoin("https://euraxess.ec.europa.eu", a.get("href", ""))
+                chave = f"{pais.lower()}::{tipo}::{link.rstrip('/').lower()}"
+                if chave in vistos:
+                    continue
+
+                bolsas.append({
+                    "titulo": titulo,
+                    "fonte": "EURAXESS",
+                    "pais": pais,
+                    "area": f"{rotulo_tipo} - {termo.group(1).title()}",
+                    "nivel": detectar_nivel(f"{titulo.lower()} {texto.lower()}"),
+                    "prazo": extrair_prazo(texto),
+                    "link": link,
+                    "data_coleta": str(date.today()),
+                    "ativa": "Sim"
+                })
+                vistos.add(chave)
+
+    log.info(f"EURAXESS Italia/Franca/Espanha: {len(bolsas)} oportunidades filtradas")
+    return bolsas
+
+
 def coletar_bolsas():
     bolsas = []
 
@@ -164,6 +261,8 @@ def coletar_bolsas():
         "DAAD",
         "Alemanha"
     )
+
+    bolsas += coletar_euraxess_it_fr_es()
 
     # Horizon (manual — melhor abordagem)
     bolsas.append({
